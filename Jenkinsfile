@@ -14,7 +14,7 @@ node {
 
     stage "Build"
         sh 'go get -d -v'
-        sh 'GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o main'
+        sh 'CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .'
         sh "docker build -t ${imageName} -f Dockerfile ."
 
     stage "Push"
@@ -22,7 +22,6 @@ node {
         sh "docker push ${imageName}"
 
     stage "Deploy"
-
         kubernetesDeploy configs: "${appName}/k8s/*.yaml", kubeconfigId: 'k8s-local'
 
 }

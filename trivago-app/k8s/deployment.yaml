@@ -31,7 +31,7 @@ spec:
         tier: trivago-app
     spec:
       containers:
-      - image: 127.0.0.1:30400/trivago-app:$BUILD_TAG
+      - image: 127.0.0.1:30400/trivago-app:$BUILD_NUMBER
         name: trivago-app
         ports:
         - containerPort: 8080
