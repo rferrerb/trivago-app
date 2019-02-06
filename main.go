@@ -49,7 +49,7 @@ func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Hello from example application."))
-		w.Write([]byte("Menudo mierdazo")))
+		w.Write([]byte("Menudo mierdazo"))
 	})
 	notfound := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
