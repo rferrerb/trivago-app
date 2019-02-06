@@ -12,6 +12,8 @@ import (
 )
 
 var (
+	config Config
+	tmpl = template.Must(template.ParseGlob("*.tmpl"))
 	version = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "version",
 		Help: "Version information about this binary",
@@ -38,13 +40,53 @@ type Config struct {
 	User     string
 	Password string
 }
+type Employee struct {
+    Id    int
+    Name  string
+    City string
+}
 
+func dbConn(config Config) (db *sql.DB) {
+    dbDriver := "mysql"
+    dbUser := config.User
+    dbPass := config.Password
+    dbName := "myapp"
+    db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+config.Server+":3306)/"+dbName)
+    if err != nil {
+        panic(err.Error())
+    }
+    return db
+}
+
+func Index(w http.ResponseWriter, r *http.Request) {
+    db := dbConn(config)
+    selDB, err := db.Query("SELECT * FROM employee ORDER BY id DESC")
+    if err != nil {
+        panic(err.Error())
+    }
+    emp := Employee{}
+    res := []Employee{}
+    for selDB.Next() {
+        var id int
+        var name, city string
+        err = selDB.Scan(&id, &name, &city)
+        if err != nil {
+            panic(err.Error())
+        }
+        emp.Id = id
+        emp.Name = name
+        emp.City = city
+        res = append(res, emp)
+    }
+    tmpl.ExecuteTemplate(w, "Index", res)
+    defer db.Close()
+}
 func main() {
 	bind := ""
 	flagset := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagset.StringVar(&bind, "bind", ":8080", "The socket to bind to.")
 	flagset.Parse(os.Args[1:])
-	var config Config
+
 	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
 		panic(err)
 	}
@@ -80,7 +122,7 @@ func main() {
 	http.Handle("/scale_up", promhttp.InstrumentHandlerCounter(httpRequestsTotal, scale_up))
 	http.Handle("/scale_down", promhttp.InstrumentHandlerCounter(httpRequestsTotal, scale_down))
 	http.Handle("/err", promhttp.InstrumentHandlerCounter(httpRequestsTotal, notfound))
-
+	http.HandleFunc("/employees", Index)
 	http.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
 	log.Fatal(http.ListenAndServe(bind, nil))
 }

@@ -1,4 +1,4 @@
 [database]
-server = "127.0.0.1"
+server = "192.168.56.131"
 user =
 password =
