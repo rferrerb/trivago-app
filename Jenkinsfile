@@ -11,7 +11,7 @@ node {
     registryHost = "127.0.0.1:30400/"
     imageName = "${registryHost}${appName}:${tag}"
     env.BUILDIMG=imageName
-    withCredentials([usernamePassword(credentialsId: 'trivago_app_mysql', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
+    withCredentials([usernamePassword(credentialsId: 'abb9982a-446d-4917-95f7-85bb98142d18', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
         sh 'echo $USERNAME'
         sh 'echo $PASSWORD'
     }
