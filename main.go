@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/BurntSushi/toml"
 	"flag"
 	"log"
 	"net/http"
-	"os"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
 )
 
 var (
@@ -32,11 +32,21 @@ var (
 	}, []string{"code", "method"})
 )
 
+type Config struct {
+	Server string
+	User string
+	Password string
+  }
+
 func main() {
 	bind := ""
 	flagset := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagset.StringVar(&bind, "bind", ":8080", "The socket to bind to.")
 	flagset.Parse(os.Args[1:])
+	var config Config
+	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+		panic(err)
+	}
 
 	r := prometheus.NewRegistry()
 	r.MustRegister(httpRequestsTotal)
@@ -49,7 +59,7 @@ func main() {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("Hello from example application."))
-		w.Write([]byte("Menudo mierdazo"))
+		w.Write([]byte(config.User))
 	})
 	notfound := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)

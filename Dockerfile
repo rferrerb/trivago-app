@@ -1,5 +1,4 @@
 FROM scratch
 ADD main /
-ENV database_user=$database_user
-ENV database_password=$database_password
+ADD config.toml /
 CMD ["/main"]

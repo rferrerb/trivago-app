@@ -16,9 +16,10 @@ node {
         sh 'go get -d -v'
         sh 'CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .'
         withCredentials([usernamePassword(credentialsId: 'abb9982a-446d-4917-95f7-85bb98142d18', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]){
-            sh "docker build --build-arg database_user=$USERNAME --build-arg database_password=$PASSWORD -t $imageName -f Dockerfile ."
+            sh "sed -i 's/user =/user =$USERNAME' config.toml"
+            sh "sed -i 's/password =/password =$PASSWORD' config.toml"
         }
-
+        sh "docker build -t ${imageName} -f Dockerfile ."
 
     stage "Push"
 
