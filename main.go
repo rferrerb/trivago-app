@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/BurntSushi/toml"
 	"flag"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/BurntSushi/toml"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
 )
 
 var (
@@ -33,10 +34,10 @@ var (
 )
 
 type Config struct {
-	Server string
-	User string
+	Server   string
+	User     string
 	Password string
-  }
+}
 
 func main() {
 	bind := ""
@@ -53,8 +54,8 @@ func main() {
 	r.MustRegister(version)
 	r.MustRegister(scale_up_metric)
 	r.MustRegister(scale_down_metric)
-        scale_up_metric.Set(0)
-        scale_down_metric.Set(0)
+	scale_up_metric.Set(0)
+	scale_down_metric.Set(0)
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
