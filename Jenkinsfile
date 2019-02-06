@@ -14,7 +14,7 @@ node {
 
     stage "Build"
 
-        sh "docker build -t ${imageName} -f Dockerfile ."
+        sh "docker build -t ${imageName} --network container:\$(docker ps | grep \$(hostname) | grep k8s_POD | cut -d\" \" -f1) -f Dockerfile ."
 
     stage "Push"
 
