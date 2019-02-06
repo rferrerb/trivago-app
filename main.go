@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	config Config
+	config tomlConfig
 	tmpl = template.Must(template.ParseGlob("*.tmpl"))
 	version = prometheus.NewGauge(prometheus.GaugeOpts{
 		Name: "version",
@@ -36,8 +36,10 @@ var (
 		Help: "Count of all HTTP requests",
 	}, []string{"code", "method"})
 )
-
-type Config struct {
+type tomlConfig struct {
+	DB      database `toml:"database"`
+}
+type database struct {
 	Server   string
 	User     string
 	Password string
@@ -48,12 +50,12 @@ type Employee struct {
     City string
 }
 
-func dbConn(config Config) (db *sql.DB) {
-    dbDriver := "mysql"
-    dbUser := config.User
-    dbPass := config.Password
+func dbConn() (db *sql.DB) {
+	dbDriver := "mysql"
+    dbUser := config.DB.User
+    dbPass := config.DB.Password
     dbName := "myapp"
-    db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+config.Server+":3306)/"+dbName)
+    db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+config.DB.Server+":3306)/"+dbName)
     if err != nil {
         panic(err.Error())
     }
@@ -61,11 +63,12 @@ func dbConn(config Config) (db *sql.DB) {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
-    db := dbConn(config)
+    db := dbConn()
     selDB, err := db.Query("SELECT * FROM employee ORDER BY id DESC")
     if err != nil {
         panic(err.Error())
-    }
+	}
+	config.
     emp := Employee{}
     res := []Employee{}
     for selDB.Next() {
