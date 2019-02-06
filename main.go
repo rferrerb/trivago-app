@@ -48,7 +48,8 @@ func main() {
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Hello from example application. We got a new version"))
+		w.Write([]byte("Hello from example application."))
+		w.Write([]byte(os.Getenv("database_user")))
 	})
 	notfound := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
