@@ -68,7 +68,6 @@ func Index(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err.Error())
 	}
-	config.
     emp := Employee{}
     res := []Employee{}
     for selDB.Next() {
