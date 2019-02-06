@@ -11,11 +11,13 @@ node {
     registryHost = "127.0.0.1:30400/"
     imageName = "${registryHost}${appName}:${tag}"
     env.BUILDIMG=imageName
-
+    withCredentials([usernamePassword(credentialsId: 'trivago_app_mysql', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')])
     stage "Build"
         sh 'go get -d -v'
         sh 'CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main .'
         sh "docker build -t ${imageName} -f Dockerfile ."
+        sh 'echo $USERNAME'
+        sh 'echo $PASSWORD'
 
     stage "Push"
 
