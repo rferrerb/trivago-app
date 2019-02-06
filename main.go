@@ -5,7 +5,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
+	"text/template"
 	"github.com/BurntSushi/toml"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
