@@ -22,6 +22,7 @@ node {
         sh "docker push ${imageName}"
 
     stage "Deploy"
+        sh "sed -i 's/$BUILD_NUMBER/${tag}/${appName}/k8s/deployment.yaml' "
         kubernetesDeploy configs: "${appName}/k8s/*.yaml", kubeconfigId: 'k8s-local'
 
 }
