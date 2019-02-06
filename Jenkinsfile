@@ -13,7 +13,8 @@ node {
     env.BUILDIMG=imageName
 
     stage "Build"
-
+        sh 'go get -d -v'
+        sh 'GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o main'
         sh "docker build -t ${imageName} -f Dockerfile ."
 
     stage "Push"
